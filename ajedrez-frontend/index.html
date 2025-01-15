@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Partidas de Ajedrez</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
+    <script src="chart.js" defer></script>
+    <script src="app.js" defer></script>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center">Gestión de Partidas de Ajedrez</h1>
+
+        <!-- Formulario para agregar una nueva partida -->
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Agregar Nueva Partida</h5>
+                <form id="add-game-form">
+                    <div class="mb-3">
+                        <label for="game_id" class="form-label">ID de Partida</label>
+                        <input type="text" id="game_id" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="players" class="form-label">Jugadores</label>
+                        <input type="text" id="players" class="form-control" placeholder="Ejemplo: Player1(white), Player2(black)" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="moves" class="form-label">Movimientos</label>
+                        <input type="text" id="moves" class="form-control" placeholder="Ejemplo: e2e4, e7e5, g1f3" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="result" class="form-label">Resultado</label>
+                        <select id="result" class="form-select" required>
+                            <option value="">Seleccionar resultado</option>
+                            <option value="white_win">Ganó Blanco</option>
+                            <option value="black_win">Ganó Negro</option>
+                            <option value="draw">Empate</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Agregar Partida</button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Tabla para mostrar partidas -->
+        <h3 class="mt-4">Lista de Partidas</h3>
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Jugadores</th>
+                    <th>Movimientos</th>
+                    <th>Resultado</th>
+                    <th>Fecha</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="games-list">
+                <!-- Las partidas se llenarán aquí dinámicamente -->
+            </tbody>
+        </table>
+
+        <!-- Gráfico de la Partida y Tablero de Ajedrez -->
+        <div class="card mt-4">
+            <div class="card-body">
+                <h5 class="card-title">Juego</h5>
+                <h5 class="mt-4">Tablero de Ajedrez</h5>
+                <div id="chessboard" class="chessboard"></div>
+                
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</body>
+</html>

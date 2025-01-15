@@ -1,0 +1,40 @@
+body {
+    background-color: #f8f9fa;
+}
+
+.container {
+    margin-top: 30px;
+}
+
+table {
+    margin-top: 20px;
+}
+
+.form-control, .btn {
+    margin-top: 10px;
+}
+
+.card {
+    margin-top: 20px;
+}
+
+.chessboard {
+    display: grid;
+    grid-template-columns: repeat(8, 1fr); /* 8 columnas */
+    width: 500px; /* Ajusta el ancho del tablero */
+    height: 500px; /* Ajusta la altura del tablero */
+    border: 1px solid #000; /* Borde del tablero */
+}
+
+.chessboard div {
+    width: 100%; /* Cada casilla ocupa el 100% del espacio de la celda */
+    height: 100%; /* Cada casilla ocupa el 100% del espacio de la celda */
+}
+
+.chessboard .white {
+    background-color: #b5e2f0; /* Color blanco */
+}
+
+.chessboard .black {
+    background-color: #6394b5; /* Color negro */
+}
