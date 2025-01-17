@@ -18,7 +18,7 @@ async function fetchGames() {
                 <td>${new Date(game.date).toLocaleString()}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" onclick="deleteGame('${game._id}')">Eliminar</button>
-                    <button class="btn btn-primary btn-sm" onclick="showGameChart('${game._id}')">Ver Partida</button>
+                    <button class="btn btn-primary btn-sm" onclick="showGameInfo('${game._id}')">Ver Partida</button>
                 </td>
             `;
             gamesList.appendChild(row);
@@ -30,7 +30,7 @@ async function fetchGames() {
 }
 
 // Agregar una nueva partida
-document.getElementById('add-game-form').addEventListener('submit', async function(event) {
+document.getElementById('add-game-form').addEventListener('submit', async function (event) {
     event.preventDefault();
 
     const game_id = document.getElementById('game_id').value;
@@ -64,168 +64,88 @@ async function deleteGame(id) {
     }
 }
 
-// Inicializar el tablero de ajedrez
-function initializeChessboard() {
-    const chessboard = document.getElementById('chessboard');
-    chessboard.innerHTML = ''; // Limpiar el tablero
-
-    const pieces = [
-        { type: 'rook', color: 'black', position: 'a8' },
-        { type: 'knight', color: 'black', position: 'b8' },
-        { type: 'bishop', color: 'black', position: 'c8' },
-        { type: 'queen', color: 'black', position: 'd8' },
-        { type: 'king', color: 'black', position: 'e8' },
-        { type: 'bishop', color: 'black', position: 'f8' },
-        { type: 'knight', color: 'black', position: 'g8' },
-        { type: 'rook', color: 'black', position: 'h8' },
-        { type: 'pawn', color: 'black', position: 'a7' },
-        { type: 'pawn', color: 'black', position: 'b7' },
-        { type: 'pawn', color: 'black', position: 'c7' },
-        { type: 'pawn', color: 'black', position: 'd7' },
-        { type: 'pawn', color: 'black', position: 'e7' },
-        { type: 'pawn', color: 'black', position: 'f7' },
-        { type: 'pawn', color: 'black', position: 'g7' },
-        { type: 'pawn', color: 'black', position: 'h7' },
-        { type: 'rook', color: 'white', position: 'a1' },
-        { type: 'knight', color: 'white', position: 'b1' },
-        { type: 'bishop', color: 'white', position: 'c1' },
-        { type: 'queen', color: 'white', position: 'd1' },
-        { type: 'king', color: 'white', position: 'e1' },
-        { type: 'bishop', color: 'white', position: 'f1' },
-        { type: 'knight', color: 'white', position: 'g1' },
-        { type: 'rook', color: 'white', position: 'h1' },
-        { type: 'pawn', color: 'white', position: 'a2' },
-        { type: 'pawn', color: 'white', position: 'b2' },
-        { type: 'pawn', color: 'white', position: 'c2' },
-        { type: 'pawn', color: 'white', position: 'd2' },
-        { type: 'pawn', color: 'white', position: 'e2' },
-        { type: 'pawn', color: 'white', position: 'f2' },
-        { type: 'pawn', color: 'white', position: 'g2' },
-        { type: 'pawn', color: 'white', position: 'h2' },
-    ];
-
-    // Crear las casillas del tablero
-    for (let row = 0; row < 8; row++) {
-        for (let col = 0; col < 8; col++) {
-            const square = document.createElement('div');
-            square.className = (row + col) % 2 === 0 ? 'white' : 'black';
-            square.style.position = 'relative'; // Asegúrate de que las casillas tengan posición relativa
-            square.style.width = '100%'; // Ajusta el ancho de las casillas
-            square.style.height = '100%'; // Ajusta la altura de las casillas
-            chessboard.appendChild(square);
-        }
-    }
-
-    // Colocar las piezas en su posición inicial
-    pieces.forEach(piece => {
-        const pieceElement = document.createElement('div');
-        pieceElement.className = `${piece.type} ${piece.color}`;
-        pieceElement.style.position = 'absolute';
-        pieceElement.style.width = '100%';
-        pieceElement.style.height = '100%';
-        pieceElement.style.backgroundImage = `url('images/${piece.color}_${piece.type}.png')`; // Asegúrate de tener las imágenes de las piezas
-        pieceElement.style.backgroundSize = 'contain';
-        pieceElement.style.backgroundRepeat = 'no-repeat';
-
-        const position = piece.position;
-        const col = position.charCodeAt(0) - 'a'.charCodeAt(0);
-        const row = 8 - parseInt(position[1]);
-
-        // Ajustar la posición de las piezas
-        const square = chessboard.children[row * 8 + col]; // Encuentra la casilla correspondiente
-        square.appendChild(pieceElement); // Agregar la pieza a la casilla
-    });
-}
-
-// Mostrar gráfico de la partida
-async function showGameChart(gameId) {
+// Mostrar información de la partida y actualizar el tablero
+async function showGameInfo(gameId) {
     try {
         const response = await axios.get(`${apiUrl}/${gameId}`);
         const game = response.data;
 
-        // Obtener el contexto del gráfico
-        const ctx = document.getElementById('gameChart').getContext('2d');
+        // Mostrar información de la partida
+        document.getElementById('info-game-id').textContent = game.game_id;
+        document.getElementById('info-players').textContent = game.players
+            .map(p => `${p.name} (${p.color})`)
+            .join(', ');
+        document.getElementById('info-result').textContent = game.result;
 
-        // Crear el gráfico
-        const chart = new Chart(ctx, {
-            type: 'line',
-            data: {
-                labels: game.moves.map((_, index) => index + 1), // Números de movimiento
-                datasets: [
-                    {
-                        label: 'Blancas',
-                        data: game.moves.map((_, index) => index % 2 === 0 ? index + 1 : null),
-                        borderColor: 'blue',
-                        fill: false,
-                    },
-                    {
-                        label: 'Negras',
-                        data: game.moves.map((_, index) => index % 2 !== 0 ? index + 1 : null),
-                        borderColor: 'red',
-                        fill: false,
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    x: {
-                        title: {
-                            display: true,
-                            text: 'Número de Movimiento'
-                        }
-                    },
-                    y: {
-                        title: {
-                            display: true,
-                            text: 'Movimientos'
-                        }
-                    }
-                }
-            }
-        });
+        // Formatear las jugadas y mostrarlas
+        const movesContainer = document.getElementById('info-moves');
+        movesContainer.innerHTML = game.moves.map((move, index) => {
+            return `<div>${Math.floor(index / 2) + 1}${index % 2 === 0 ? '. ' : '... '}${move}</div>`;
+        }).join('');
 
-        // Mostrar información de los jugadores
-        const playersInfo = document.getElementById('players-info');
-        playersInfo.innerHTML = `
-            <p><strong>Jugadores:</strong> ${game.players.map(p => `${p.name} (${p.color})`).join(', ')}</p>
-            <p><strong>Resultado:</strong> ${game.result}</p>
-            <p><strong>Fecha</strong> ${new Date(game.date).toLocaleString()}</p>
-        `;
-
-        // Inicializar el índice de movimiento
-        let currentMoveIndex = 0;
-
-        // Función para actualizar el gráfico según el movimiento actual
-        function updateChart() {
-            chart.data.datasets[0].data = game.moves.map((_, index) => index % 2 === 0 ? index + 1 : null);
-            chart.data.datasets[1].data = game.moves.map((_, index) => index % 2 !== 0 ? index + 1 : null);
-            chart.update();
-        }
-
-        // Botones para avanzar y retroceder movimientos
-        document.getElementById('prev-move').onclick = function() {
-            if (currentMoveIndex > 0) {
-                currentMoveIndex--;
-                updateChart();
-            }
-        };
-
-        document.getElementById('next-move').onclick = function() {
-            if (currentMoveIndex < game.moves.length - 1) {
-                currentMoveIndex++;
-                updateChart();
-            }
-        };
-
+        // Inicializar el tablero y aplicar los movimientos
+        initializeChessboard();
+        applyMovesToChessboard(game.moves);
     } catch (error) {
-        console.error('Error al cargar el gráfico de la partida:', error);
-        alert('Error al cargar el gráfico de la partida. Intenta de nuevo más tarde.');
+        console.error('Error al cargar la información de la partida:', error);
+        alert('Error al cargar la información de la partida. Intenta de nuevo más tarde.');
     }
 }
 
+// Inicializar el tablero con la posición inicial
+function initializeChessboard() {
+    const chessboard = document.getElementById('chessboard');
+    chessboard.innerHTML = ''; // Limpiar el tablero
+
+    // Crear las casillas
+    for (let row = 0; row < 8; row++) {
+        for (let col = 0; col < 8; col++) {
+            const square = document.createElement('div');
+            square.className = 'square';
+            square.classList.add((row + col) % 2 === 0 ? 'white' : 'black');
+            square.dataset.position = `${String.fromCharCode(97 + col)}${8 - row}`;
+            chessboard.appendChild(square);
+        }
+    }
+
+    // Colocar las piezas iniciales
+    const initialPieces = {
+        a8: '&#9820;', b8: '&#9822;', c8: '&#9821;', d8: '&#9819;',
+        e8: '&#9818;', f8: '&#9821;', g8: '&#9822;', h8: '&#9820;',
+        a7: '&#9823;', b7: '&#9823;', c7: '&#9823;', d7: '&#9823;',
+        e7: '&#9823;', f7: '&#9823;', g7: '&#9823;', h7: '&#9823;',
+        a2: '&#9817;', b2: '&#9817;', c2: '&#9817;', d2: '&#9817;',
+        e2: '&#9817;', f2: '&#9817;', g2: '&#9817;', h2: '&#9817;',
+        a1: '&#9814;', b1: '&#9816;', c1: '&#9815;', d1: '&#9813;',
+        e1: '&#9812;', f1: '&#9815;', g1: '&#9816;', h1: '&#9814;',
+    };
+
+    for (const [position, piece] of Object.entries(initialPieces)) {
+        const squareIndex =
+            (8 - parseInt(position[1])) * 8 + (position.charCodeAt(0) - 'a'.charCodeAt(0));
+        const square = chessboard.children[squareIndex];
+        square.innerHTML = piece;
+    }
+}
+
+// Aplicar movimientos al tablero
+function applyMovesToChessboard(moves) {
+    moves.forEach(move => {
+        const from = move.substring(0, 2); // Casilla origen
+        const to = move.substring(2, 4); // Casilla destino
+
+        const fromSquare = document.querySelector(`[data-position="${from}"]`);
+        const toSquare = document.querySelector(`[data-position="${to}"]`);
+
+        if (fromSquare && toSquare && fromSquare.innerHTML) {
+            toSquare.innerHTML = fromSquare.innerHTML; // Mover pieza
+            fromSquare.innerHTML = ''; // Vaciar casilla origen
+        }
+    });
+}
+
 // Inicializar el tablero al cargar la página
-window.onload = function() {
+window.onload = function () {
     fetchGames();
     initializeChessboard();
 };

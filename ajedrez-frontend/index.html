@@ -5,75 +5,155 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Gestión de Partidas de Ajedrez</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css">
+    <style>
+        .container {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .game-section {
+            display: flex;
+            flex-direction: row;
+            gap: 20px;
+            align-items: flex-start;
+        }
+
+        .chessboard {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            grid-template-rows: repeat(8, 1fr);
+            width: 400px;
+            height: 400px;
+            border: 2px solid black;
+        }
+
+        .square {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .white {
+            background-color: #f0d9b5; /* Tonos azulados claros */
+        }
+
+        .black {
+            background-color: #b58863; /* Tonos azulados oscuros */
+        }
+
+        .piece {
+            font-family: "Arial", sans-serif;
+        }
+
+        .info {
+            flex-grow: 1;
+            width: 300px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            padding: 16px;
+            background-color: #f9f9f9;
+        }
+
+        .info h3 {
+            text-align: center;
+            margin-bottom: 16px;
+        }
+
+        .moves {
+            display: grid;
+            grid-template-columns: auto auto auto;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .move-number {
+            font-weight: bold;
+        }
+
+        .move-white, .move-black {
+            text-align: left;
+        }
+    </style>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
-    <script src="chart.js" defer></script>
     <script src="app.js" defer></script>
 </head>
 <body>
     <div class="container">
-        <h1 class="text-center">Gestión de Partidas de Ajedrez</h1>
+        <div>
+            <h1 class="text-center">Gestión de Partidas de Ajedrez</h1>
 
-        <!-- Formulario para agregar una nueva partida -->
-        <div class="card">
-            <div class="card-body">
-                <h5 class="card-title">Agregar Nueva Partida</h5>
-                <form id="add-game-form">
-                    <div class="mb-3">
-                        <label for="game_id" class="form-label">ID de Partida</label>
-                        <input type="text" id="game_id" class="form-control" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="players" class="form-label">Jugadores</label>
-                        <input type="text" id="players" class="form-control" placeholder="Ejemplo: Player1(white), Player2(black)" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="moves" class="form-label">Movimientos</label>
-                        <input type="text" id="moves" class="form-control" placeholder="Ejemplo: e2e4, e7e5, g1f3" required>
-                    </div>
-                    <div class="mb-3">
-                        <label for="result" class="form-label">Resultado</label>
-                        <select id="result" class="form-select" required>
-                            <option value="">Seleccionar resultado</option>
-                            <option value="white_win">Ganó Blanco</option>
-                            <option value="black_win">Ganó Negro</option>
-                            <option value="draw">Empate</option>
-                        </select>
-                    </div>
-                    <button type="submit" class="btn btn-primary">Agregar Partida</button>
-                </form>
+            <!-- Formulario para agregar una nueva partida -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Agregar Nueva Partida</h5>
+                    <form id="add-game-form">
+                        <div class="mb-3">
+                            <label for="game_id" class="form-label">ID de Partida</label>
+                            <input type="text" id="game_id" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="players" class="form-label">Jugadores</label>
+                            <input type="text" id="players" class="form-control" placeholder="Ejemplo: Player1(white), Player2(black)" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="moves" class="form-label">Movimientos</label>
+                            <input type="text" id="moves" class="form-control" placeholder="Ejemplo: e2e4, e7e5, g1f3" required>
+                        </div>
+                        <div class="mb-3">
+                            <label for="result" class="form-label">Resultado</label>
+                            <select id="result" class="form-select" required>
+                                <option value="">Seleccionar resultado</option>
+                                <option value="white_win">Ganó Blanco</option>
+                                <option value="black_win">Ganó Negro</option>
+                                <option value="draw">Empate</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Agregar Partida</button>
+                    </form>
+                </div>
             </div>
+
+            <!-- Tabla para mostrar partidas -->
+            <h3 class="mt-4">Lista de Partidas</h3>
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Jugadores</th>
+                        <th>Movimientos</th>
+                        <th>Resultado</th>
+                        <th>Fecha</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="games-list"></tbody>
+            </table>
         </div>
 
-        <!-- Tabla para mostrar partidas -->
-        <h3 class="mt-4">Lista de Partidas</h3>
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Jugadores</th>
-                    <th>Movimientos</th>
-                    <th>Resultado</th>
-                    <th>Fecha</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody id="games-list">
-                <!-- Las partidas se llenarán aquí dinámicamente -->
-            </tbody>
-        </table>
+        <!-- Tablero de ajedrez y detalles -->
+        <div class="game-section">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Tablero de Ajedrez</h5>
+                    <div id="chessboard" class="chessboard"></div>
+                </div>
+            </div>
 
-        <!-- Gráfico de la Partida y Tablero de Ajedrez -->
-        <div class="card mt-4">
-            <div class="card-body">
-                <h5 class="card-title">Juego</h5>
-                <h5 class="mt-4">Tablero de Ajedrez</h5>
-                <div id="chessboard" class="chessboard"></div>
-                
+            <!-- Información de la partida -->
+            <div class="info">
+                <h3>Información de la Partida</h3>
+                <p><strong>ID de Partida:</strong> <span id="info-game-id"></span></p>
+                <p><strong>Jugadores:</strong> <span id="info-players"></span></p>
+                <p><strong>Resultado:</strong> <span id="info-result"></span></p>
+                <div>
+                    <h5>Movimientos:</h5>
+                    <div class="moves" id="info-moves"></div>
+                </div>
             </div>
         </div>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </body>
 </html>
