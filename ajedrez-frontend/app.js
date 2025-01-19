@@ -18,7 +18,7 @@ async function fetchGames() {
                 <td>${new Date(game.date).toLocaleString()}</td>
                 <td>
                     <button class="btn btn-danger btn-sm" onclick="deleteGame('${game._id}')">Eliminar</button>
-                    <button class="btn btn-primary btn-sm" onclick="showGameInfo('${game._id}')">Ver Partida</button>
+                    <button class="btn btn-primary btn-sm" onclick="showGameInfo('${game._id}')">Ver información</button>
                 </td>
             `;
             gamesList.appendChild(row);
