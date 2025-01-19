@@ -85,7 +85,6 @@ async function showGameInfo(gameId) {
 
         // Inicializar el tablero y aplicar los movimientos
         initializeChessboard();
-        applyMovesToChessboard(game.moves);
     } catch (error) {
         console.error('Error al cargar la información de la partida:', error);
         alert('Error al cargar la información de la partida. Intenta de nuevo más tarde.');
@@ -128,21 +127,6 @@ function initializeChessboard() {
     }
 }
 
-// Aplicar movimientos al tablero
-function applyMovesToChessboard(moves) {
-    moves.forEach(move => {
-        const from = move.substring(0, 2); // Casilla origen
-        const to = move.substring(2, 4); // Casilla destino
-
-        const fromSquare = document.querySelector(`[data-position="${from}"]`);
-        const toSquare = document.querySelector(`[data-position="${to}"]`);
-
-        if (fromSquare && toSquare && fromSquare.innerHTML) {
-            toSquare.innerHTML = fromSquare.innerHTML; // Mover pieza
-            fromSquare.innerHTML = ''; // Vaciar casilla origen
-        }
-    });
-}
 
 // Inicializar el tablero al cargar la página
 window.onload = function () {
